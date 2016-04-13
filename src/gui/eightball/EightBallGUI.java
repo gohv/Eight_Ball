@@ -2,6 +2,7 @@ package gui.eightball;
 
 import chooser.eightball.*;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -17,20 +18,22 @@ public class EightBallGUI extends JFrame {
 	AnswerChooser chooser = new AnswerChooser();
 	Answers answer = new Answers();
 	private String answerString;
+	private JButton askButton = new JButton("ASK!");
+	private boolean isClicked = false;
 
 	public EightBallGUI() {
 		createUI();
 	}
 
 	public void createUI() {
-		
+
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
-		
+
 		questionText = new JTextField();
 		questionText.setBounds(12, 13, 482, 52);
-		getContentPane().add(questionText);		
+		getContentPane().add(questionText);
 		questionText.getDocument().addDocumentListener(new DocumentListener() {
-			// disable EndOfDayButton if not calls are counter.
+
 			@Override
 			public void removeUpdate(DocumentEvent e) {
 				updateButton();
@@ -45,22 +48,18 @@ public class EightBallGUI extends JFrame {
 			public void changedUpdate(DocumentEvent e) {
 				updateButton();
 			}
-		});		
+		});
 		questionText.setColumns(10);
 
-		JButton askButton = new JButton("ASK!");
+		askButton.setEnabled(false);
+
 		askButton.addActionListener(new ActionListener() {
+
 			public void actionPerformed(ActionEvent arg0) {
 
-				
-				String getText = questionText.getText();
-				if (getText.contains("?") && getText.length() >= 5) {
-					choose();
-					answersText.setText(answerString);
-
-				} else {
-					answersText.setText("Please ask a real question!");
-				}
+				updateButton();
+				choose();
+				clickAgain();
 
 			}
 		});
@@ -124,9 +123,29 @@ public class EightBallGUI extends JFrame {
 		} else if (chooser.getChooser() == 21) {
 			answerString = answer.getAnswer21();
 		}
+		answersText.setText(answerString);
 	}
-	
-	private void updateButton(){
+
+	private void updateButton() {
+
+		String getText = questionText.getText();
+		if (getText.contains("?") && getText.length() >= 5) {
+			askButton.setEnabled(true);
+
+		} else {
+			askButton.setEnabled(false);
+			
+		}
+	}
+
+	private void clickAgain() {
+		askButton.setText("Click Again to Exit");
+		askButton.addActionListener(new ActionListener() {
+
+			public void actionPerformed(ActionEvent arg0) {
+				dispose();
+			}
+		});
 
 	}
 
